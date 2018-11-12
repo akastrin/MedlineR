@@ -1,6 +1,6 @@
 ## http://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pubmed&term=STE12+AND+SST2
 
-require(XML)
+require(xml2)
 options("serviceUrl.entrez" = "http://eutils.ncbi.nlm.nih.gov/entrez/eutils/")
 
 ## Count the number of abstracts with both term1 and term2
@@ -11,8 +11,8 @@ countApair <- function(term1, term2, termAdditional = "", baseUrl = getOption("s
 
     query <- paste(baseUrl, "esearch.fcgi?", "db=pubmed&", "rettype=counts&", "term=", term1,
                    "+AND+", term2, termAdditional, sep = "")
-    result.xml <- try(xmlTreeParse(file = query, isURL = TRUE))
-    count <- as.numeric(xmlValue(xmlRoot(result.xml)[["Count"]]))
+    doc <- read_xml(query)
+    count <- doc %>% xml_find_all("./Count") %>% xml_integer()
     return(count)
 }
 
